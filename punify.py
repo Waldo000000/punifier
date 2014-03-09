@@ -26,8 +26,10 @@ def getTopicalWords(tokens):
 def replaceTokens(tokens, topicalWords, thesaurus):
   for idx, token in enumerate(tokens):
     synonyms = thesaurus.get(token) or [token]
-    candidates = list(set(synonyms) & set(topicalWords)) # TODO: optimize if necc. 
-    outToken = candidates[0].upper() if candidates else token # TODO: score candidates
+
+    # TODO: optimize: based on topicalWords, pre-compute filtered thesaurus that maps from single potential token to single best topical word
+    candidates = list(set(synonyms) & set(topicalWords)) 
+    outToken = candidates[0].upper() if candidates else token
     tokens[idx] = outToken
 
 def punify(text):
