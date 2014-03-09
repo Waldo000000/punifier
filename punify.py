@@ -24,18 +24,17 @@ def getTopicalWords(tokens):
   return [];
 
 def replaceTokens(tokens, topicalWords, thesaurus):
-  result = [];
-  for token in tokens:
+  for idx, token in enumerate(tokens):
     synonyms = thesaurus.get(token) or [token]
     candidates = list(set(synonyms) & set(topicalWords)) # TODO: optimize if necc. 
     outToken = candidates[0].upper() if candidates else token # TODO: score candidates
-    result.append(outToken)
-  return ' '.join(join_punctuation(result))
+    tokens[idx] = outToken
 
 def punify(text):
   tokens = nltk.word_tokenize(text);
   topicalWords = getTopicalWords(tokens);
-  return replaceTokens(tokens, topicalWords, thesaurus);
+  replaceTokens(tokens, topicalWords, thesaurus);
+  return ' '.join(join_punctuation(tokens))
 
 def main(): 
   parser = argparse.ArgumentParser()
