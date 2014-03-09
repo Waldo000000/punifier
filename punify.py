@@ -1,48 +1,41 @@
 #!/usr/bin/python
 """
 Punifier
+
+Usage: ./punifier.py ./text.txt
 """
 import sys
 from sets import Set
 import nltk
 import argparse
 
-# TODO: parse from args
-#text = "'I like bikes!' said Rob.";
-
 # TODO
 thesaurus = { 
-  "said": ["spoke"],
-  "spoke": ["said"],
+  'said': ['spoke'],
+  'spoke': ['said'],
 };
 
 # TODO
-def getTopicWords(topic):
-  if (topic == "bikes"):
-    return [ "spoke", "tired" ];
+def getTopicalWords(tokens):
+  bikeWords = [ 'spoke', 'tired' ];
+  tokenSet = set(tokens)
+  if 'bikes' in tokenSet:
+    return bikeWords;
   return [];
 
-def getTopic(text):
-  # TODO
-  return "bikes";
-
-def replaceTokens(text, topicWords, thesaurus):
+def replaceTokens(tokens, topicalWords, thesaurus):
   result = [];
-  tokens = nltk.word_tokenize(text);
   for token in tokens:
-    synonyms = thesaurus.get(token)
-    if synonyms:
-      candidates = list(set(synonyms) & set(topicWords)) # TODO: optimize if necc. 
-      if candidates:
-        result.append(candidates[0].upper()) # TODO: score candidates
-        continue
-    result.append(token)
+    synonyms = thesaurus.get(token) or [token]
+    candidates = list(set(synonyms) & set(topicalWords)) # TODO: optimize if necc. 
+    outToken = candidates[0].upper() if candidates else token # TODO: score candidates
+    result.append(outToken)
   return ' '.join(join_punctuation(result))
 
 def punify(text):
-  topic = getTopic(text);
-  topicWords = getTopicWords(topic);
-  return replaceTokens(text, topicWords, thesaurus);
+  tokens = nltk.word_tokenize(text);
+  topicalWords = getTopicalWords(tokens);
+  return replaceTokens(tokens, topicalWords, thesaurus);
 
 def main(): 
   parser = argparse.ArgumentParser()
@@ -52,7 +45,7 @@ def main():
   for line in args.infile:
     print punify(line);
 
-# TODO: fix joining of tokens
+# TODO: is there a better way to un-tokenize via nltk?
 def join_punctuation(seq, characters='.,;?!\''):
   characters = set(characters)
   seq = iter(seq)
